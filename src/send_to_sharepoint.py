@@ -40,8 +40,12 @@ def acquire_token():
     token = app.acquire_token_for_client(scopes=[f"https://{graph_endpoint}/.default"])
     return token
 
+print("Acquire token ...")
 client = GraphClient(acquire_token)
+print("Acquired token")
+print("Creating drive")
 drive = client.sites.get_by_url(tenant_url).drive.root.get_by_path(upload_path)
+print("Created drive")
 
 def progress_status(offset, file_size):
     print(f"Uploaded {offset} bytes from {file_size} bytes ... {offset/file_size*100:.2f}%")
@@ -93,8 +97,11 @@ def upload_file(drive, local_path, chunk_size):
             max_chunk_retry=60, 
             timeout_secs=10*60)
 
+print(f"Uploading {len(local_files)} file(s)")
+
 for f in local_files:
   for i in range(max_retry):
+    print(f"Uploading file {f} (attempt {i + 1}/{max_retry + 1})")
     try:
         upload_file(drive, f, 4*1024*1024)
         break
